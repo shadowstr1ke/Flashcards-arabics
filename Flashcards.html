@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arabic Vocab Flashcards</title>
+<style>
+body { font-family: Arial, sans-serif; background-color: #121212; color: #f0f0f0; display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; }
+.flashcard { background-color: #1e1e1e; color: #f0f0f0; width: 400px; height: 200px; display: flex; justify-content: center; align-items: center; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); cursor: pointer; text-align: center; font-size: 22px; padding: 20px; transition: transform 0.6s; transform-style: preserve-3d; margin-bottom: 10px; position: relative; }
+.flashcard.flip { transform: rotateY(180deg); }
+.front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; justify-content: center; align-items: center; border-radius: 10px; padding: 20px; box-sizing: border-box; }
+.back { transform: rotateY(180deg); background-color: #333333; color: #f0f0f0; }
+button { margin: 5px; padding: 10px 20px; font-size: 16px; border-radius: 5px; border: none; cursor: pointer; background-color: #333333; color: #f0f0f0; }
+button:hover { background-color: #555555; }
+</style>
+</head>
+<body>
+<div class="flashcard" id="flashcard">
+  <div class="front" id="front"></div>
+  <div class="back" id="back"></div>
+</div>
+<div>
+  <button onclick="know()">I Know</button>
+  <button onclick="dontKnow()">I Don't Know</button>
+  <button onclick="nextCard()">Next Card</button>
+</div>
+<script>
+const flashcards = [
+  // Lesson 16: School
+  {arabic:'المدرسة الثانوية للبنات', english:'Higher secondary school for girls'},
+  {arabic:'بوابة', english:'Gate'},
+  {arabic:'فصل', english:'Classroom'},
+  {arabic:'مكتبة', english:'Library'},
+  {arabic:'ملعب', english:'Playground'},
+  {arabic:'مسبح', english:'Swimming pool'},
+  {arabic:'مدرس', english:'Teacher'},
+  {arabic:'طالبة', english:'Student'},
+  {arabic:'مدير', english:'Principal/Manager'},
+  {arabic:'سبورة', english:'Blackboard'},
+  {arabic:'كتاب', english:'Book'},
+  {arabic:'أدوات', english:'Materials'},
+  {arabic:'صف', english:'Class'},
+  {arabic:'غرفة', english:'Room'},
+  {arabic:'برنامج', english:'Programme'},
+  {arabic:'رياضة', english:'Sports'},
+  {arabic:'كرة قدم', english:'Football'},
+  {arabic:'كرة مضرب', english:'Hockey'},
+  {arabic:'مراقب', english:'Supervisor'},
+  // Lesson 17: Travel / Railway
+  {arabic:'تذكرة', english:'Ticket'},
+  {arabic:'محطة القطار', english:'Railway station'},
+  {arabic:'قطار', english:'Train'},
+  {arabic:'نافذة', english:'Ticket counter/window'},
+  {arabic:'موظف', english:'Employee'},
+  {arabic:'صف', english:'Queue'},
+  {arabic:'أوراق', english:'Form/Paper'},
+  {arabic:'حجز', english:'Reservation'},
+  {arabic:'مدينة', english:'City'},
+  {arabic:'رحلة', english:'Journey/Trip'},
+  {arabic:'عائلة', english:'Family'},
+  {arabic:'أطفال', english:'Children'},
+  {arabic:'بالغين', english:'Adults'},
+  // Lesson 19: Travel / College
+  {arabic:'جامعة', english:'College/University'},
+  {arabic:'هندسة', english:'Engineering'},
+  {arabic:'عطل', english:'Holidays'},
+  {arabic:'أمتعة', english:'Luggage'},
+  {arabic:'نصيحة', english:'Advice'},
+  {arabic:'سفر', english:'Travel'},
+  {arabic:'صديق', english:'Friend'},
+  {arabic:'طعام', english:'Food'},
+  {arabic:'ماء', english:'Water'},
+  {arabic:'تاكسي', english:'Taxi'},
+  {arabic:'سكن', english:'Hostel'},
+  // Lesson 20: Bank
+  {arabic:'حساب توفير', english:'Savings account'},
+  {arabic:'بنك', english:'Bank'},
+  {arabic:'مدير البنك', english:'Bank manager'},
+  {arabic:'إيداع', english:'Deposit'},
+  {arabic:'سحب', english:'Withdraw'},
+  {arabic:'نقد', english:'Cash'},
+  {arabic:'رسوم', english:'Fees'},
+  {arabic:'قرض', english:'Loan'},
+  {arabic:'اهتمام', english:'Interest'},
+  {arabic:'توفير', english:'Saving'},
+  {arabic:'صديق', english:'Friend'},
+  {arabic:'ورقة', english:'Form'},
+  {arabic:'توقيع', english:'Signature'},
+  {arabic:'والد', english:'Father'},
+  {arabic:'إبن', english:'Son'},
+  {arabic:'موظف البنك', english:'Bank employee'},
+  {arabic:'متابعة', english:'Monitoring'},
+  {arabic:'أمان', english:'Safety'},
+  {arabic:'نظام', english:'System'},
+  // Add more terms here following the same pattern until 120+ terms
+];
+
+// Flashcard logic
+let current = 0;
+let dontKnowList = [];
+let reviewMode = false;
+let reviewCards = [];
+let missedCards = [];
+const front = document.getElementById('front');
+const back = document.getElementById('back');
+const card = document.getElementById('flashcard');
+
+function showCard(index){
+  let cardIndex = reviewMode ? reviewCards[index] : index;
+  if(flashcards[cardIndex]){
+    front.textContent = flashcards[cardIndex].arabic;
+    back.textContent = flashcards[cardIndex].english;
+  }
+  card.classList.remove('flip');
+}
+
+card.addEventListener('click', ()=>{
+  card.classList.toggle('flip');
+});
+
+function nextCard(){
+  if(reviewMode){
+    current++;
+    if(current>=reviewCards.length){
+      if(missedCards.length){
+        reviewCards = [...missedCards];
+        missedCards = [];
+        current=0;
+        alert('Now reviewing missed cards.');
+        showCard(current);
+      }else{
+        alert('You have finished reviewing all cards!');
+        current=0; reviewMode=false; reviewCards=[];
+      }
+    }else showCard(current);
+  }else{
+    current++;
+    if(current>=flashcards.length){
+      if(dontKnowList.length){
+        reviewMode=true;
+        reviewCards=[...dontKnowList];
+        dontKnowList=[];
+        current=0;
+        alert('Now reviewing cards you marked as "I Don\'t Know".');
+        showCard(current);
+      }else{
+        alert('You have finished all cards!');
+        current=0;
+      }
+    }else showCard(current);
+  }
+}
+
+function know(){
+  if(reviewMode){
+    let index=reviewCards[current];
+    missedCards=missedCards.filter(i=>i!==index);
+  }
+  nextCard();
+}
+
+function dontKnow(){
+  let index=reviewMode?reviewCards[current]:current;
+  if(!reviewMode && !dontKnowList.includes(index)) dontKnowList.push(index);
+  if(reviewMode && !missedCards.includes(index)) missedCards.push(index);
+  nextCard();
+}
+
+showCard(current);
+</script>
+</body>
+</html>
